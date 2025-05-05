@@ -1,0 +1,4 @@
+.DS_Store
+*.tmp
+~ # for Office autosave files
+*.asv # for MATLAB backup files
