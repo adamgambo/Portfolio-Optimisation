@@ -1,11 +1,11 @@
 # Portfolio Analysis with Bitcoin
 
-This repository contains code and data for analyzing optimal Bitcoin allocation in retail investor portfolios.
+This repository contains code and data for analysing optimal Bitcoin allocation in retail investor portfolios.
 
 ## Repository Structure
 
 ### Code
-- `portfolio_analysis_test.m`: Main MATLAB script for portfolio optimization and analysis
+- `portfolio_analysis_test.m`: Main MATLAB script for portfolio optimisation and analysis
 
 ### Data
 - `bitcoin_data.csv`: Bitcoin historical price data
@@ -15,13 +15,13 @@ This repository contains code and data for analyzing optimal Bitcoin allocation 
 
 ### Outputs
 #### Figures
-- `correlation_heatmap.pdf`: Asset correlation visualization
+- `correlation_heatmap.pdf`: Asset correlation visualisation
 - `garch_volatility_labeled.pdf`: Bitcoin volatility analysis with GARCH model
-- `efficient_frontier_onepanel_clean.pdf`: Efficient frontier visualization
+- `efficient_frontier_onepanel_clean.pdf`: Efficient frontier visualisation
 - `bitcoin_allocation_by_risk_profile.pdf`: Bitcoin allocation across risk profiles
-- `portfolio_weights.pdf`: Portfolio composition visualization
+- `portfolio_weights.pdf`: Portfolio composition visualisation
 - `portfolio_value_over_time.pdf`: Historical performance analysis
-- `risk_return_bitcoin_allocation.pdf`: Risk-return profile visualization
+- `risk_return_bitcoin_allocation.pdf`: Risk-return profile visualisation
 - Monte Carlo simulation results:
   - `monte_carlo_low_risk.pdf`
   - `monte_carlo_moderate_risk.pdf`
@@ -37,4 +37,4 @@ The analysis examines three portfolio profiles:
 2. Moderate-Risk: 5.0% Bitcoin, 55.0% S&P 500, 40.0% Bonds
 3. High-Risk: 20.0% Bitcoin, 80.0% S&P 500, 0.0% Bonds
 
-Each profile is optimized for maximum Sharpe ratio within its risk constraints. 
+Each profile is optimised for maximum Sharpe ratio within its risk constraints. 
