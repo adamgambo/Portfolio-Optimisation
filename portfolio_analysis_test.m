@@ -168,7 +168,7 @@ function data = loadAndPreprocessData(config)
         data = generateSyntheticData(config);
         
         fprintf('✓ Data loaded and preprocessed successfully\n');
-        fprintf('  📈 Data range: %s to %s\n', datestr(data.dates(1)), datestr(data.dates(end)));
+        fprintf('  📈 Data range: %s to %s\n', char(data.dates(1)), char(data.dates(end)));
         fprintf('  📊 Total observations: %d\n', length(data.dates));
         fprintf('  💹 Assets: %s\n', strjoin(config.assets.names, ', '));
         
@@ -240,7 +240,7 @@ function data = generateSyntheticData(config)
     fprintf('📊 Generated synthetic data for demonstration\n');
 end
 
-function rollingStats = calculateRollingStatistics(returns, config)
+function rollingStats = calculateRollingStatistics(returns, ~)
     % Calculate rolling statistics for risk analysis
     
     window = min(12, floor(size(returns, 1) / 3)); % Adaptive window size
@@ -364,7 +364,8 @@ function basicStats = calculateBasicStatistics(returns, assetNames)
         if length(ret) > 7 % Minimum for Jarque-Bera test
             try
                 [basicStats.(asset).jbStat, basicStats.(asset).jbPValue] = jbtest(ret);
-            catch
+            catch ME
+                fprintf('Warning: Jarque-Bera test failed: %s\n', ME.message);
                 basicStats.(asset).jbStat = NaN;
                 basicStats.(asset).jbPValue = NaN;
             end
@@ -372,7 +373,7 @@ function basicStats = calculateBasicStatistics(returns, assetNames)
     end
 end
 
-function correlation = calculateCorrelationAnalysis(returns, config)
+function correlation = calculateCorrelationAnalysis(returns, ~)
     % Enhanced correlation analysis
     
     correlation = struct();
@@ -381,7 +382,7 @@ function correlation = calculateCorrelationAnalysis(returns, config)
     validReturns = returns(all(~isnan(returns), 2), :);
     
     if size(validReturns, 1) < 3
-        warning('Insufficient data for correlation analysis');
+        fprintf('Warning: Insufficient data for correlation analysis\n');
         correlation.pearson = eye(size(returns, 2));
         correlation.spearman = eye(size(returns, 2));
         correlation.kendall = eye(size(returns, 2));
@@ -424,7 +425,7 @@ function correlation = calculateCorrelationAnalysis(returns, config)
     end
 end
 
-function bitcoinStats = analyzeBitcoinCharacteristics(data, config)
+function bitcoinStats = analyzeBitcoinCharacteristics(data, ~)
     % Comprehensive Bitcoin analysis
     
     bitcoinStats = struct();
@@ -671,7 +672,7 @@ function profiles = optimizeRiskProfiles(expReturns, covMatrix, rfr, config)
                    profileName, weights(1)*100, weights(2)*100, weights(3)*100, sharpeRatio);
             
         catch ME
-            warning('Failed to optimize %s portfolio: %s', profileName, ME.message);
+            fprintf('Warning: Failed to optimize %s portfolio: %s\n', profileName, ME.message);
             
             % Simple fallback with forced Bitcoin allocation
             bitcoinWeight = forcedBitcoinAlloc(i);
@@ -716,7 +717,8 @@ function weights = optimizeWithFmincon(expReturns, covMatrix, avgRfr, lb, ub)
     
     try
         weights = fmincon(objFun, x0, [], [], Aeq, beq, lb, ub, [], options);
-    catch
+    catch ME
+        fprintf('Warning: fmincon optimization failed: %s\n', ME.message);
         % Final fallback: use bounds-constrained equal weights
         weights = (lb + ub) / 2;
         weights = weights / sum(weights);
@@ -813,7 +815,7 @@ function frontier = calculateEfficientFrontier(expReturns, covMatrix, rfr, confi
                                    'sharpe', sharpeRatios(maxSharpeIdx));
         
     catch ME
-        warning('Efficient frontier calculation failed: %s', ME.message);
+        fprintf('Warning: Efficient frontier calculation failed: %s\n', ME.message);
         % Create empty frontier
         frontier = struct();
         frontier.weights = [];
@@ -870,7 +872,7 @@ function mcResults = runMonteCarloSimulation(data, portfolioResults, config)
         validReturns = returns(all(~isnan(returns), 2), :);
         
         if size(validReturns, 1) < 12
-            warning('Insufficient data for Monte Carlo simulation');
+            fprintf('Warning: Insufficient data for Monte Carlo simulation\n');
             return;
         end
         
@@ -1126,7 +1128,7 @@ function createCorrelationHeatmap(corrMatrix, assetNames, config)
         imagesc(corrMatrix);
         colormap(getCorrelationColormap());
         colorbar;
-        caxis([-1, 1]);
+        clim([-1, 1]);
         
         % Set labels
         set(gca, 'XTick', 1:length(assetNames), 'XTickLabel', assetNames);
@@ -1204,7 +1206,7 @@ function createReturnDistributions(data, config)
     end
 end
 
-function createOptimizationVisualizations(portfolioResults, data, config)
+function createOptimizationVisualizations(portfolioResults, ~, config)
     % Create portfolio optimization visualizations
     
     try
@@ -1341,7 +1343,7 @@ function createPortfolioAllocationCharts(portfolioResults, config)
     end
 end
 
-function createRiskVisualizations(riskResults, data, portfolioResults, config)
+function createRiskVisualizations(riskResults, data, ~, config)
     % Create comprehensive risk analysis visualizations
     
     try
@@ -1560,13 +1562,13 @@ function exportFigure(fig, filename, config)
             
             % Export using print with proper options
             if strcmp(config.plot.exportFormat, 'vector')
-                print(fig, filename, '-dpdf', '-painters', '-bestfit');
+                print(fig, filename, '-dpdf', '-vector', '-bestfit');
             else
                 print(fig, filename, '-dpng', sprintf('-r%d', config.plot.exportDPI), '-bestfit');
             end
             
         catch ME
-            warning('Failed to export figure %s: %s', filename, ME.message);
+            fprintf('Warning: Failed to export figure %s: %s\n', filename, ME.message);
         end
     end
     
@@ -1646,7 +1648,7 @@ function displayDescriptiveResults(stats, config)
     fprintf('\n%s\n', repmat('=', 1, 60));
 end
 
-function generateResults(data, portfolioResults, riskResults, descriptiveStats, config)
+function generateResults(~, portfolioResults, riskResults, ~, config)
     % Generate comprehensive results and reports
     
     fprintf('📋 Generating comprehensive results...\n');
@@ -1665,7 +1667,7 @@ function generateResults(data, portfolioResults, riskResults, descriptiveStats, 
     end
 end
 
-function createSummaryTables(portfolioResults, riskResults, config)
+function createSummaryTables(portfolioResults, ~, config)
     % Create summary tables for portfolio analysis
     
     try
