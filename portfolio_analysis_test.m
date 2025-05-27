@@ -364,8 +364,7 @@ function basicStats = calculateBasicStatistics(returns, assetNames)
         if length(ret) > 7 % Minimum for Jarque-Bera test
             try
                 [basicStats.(asset).jbStat, basicStats.(asset).jbPValue] = jbtest(ret);
-            catch ME
-                fprintf('Warning: Jarque-Bera test failed: %s\n', ME.message);
+            catch
                 basicStats.(asset).jbStat = NaN;
                 basicStats.(asset).jbPValue = NaN;
             end
@@ -382,7 +381,7 @@ function correlation = calculateCorrelationAnalysis(returns, ~)
     validReturns = returns(all(~isnan(returns), 2), :);
     
     if size(validReturns, 1) < 3
-        fprintf('Warning: Insufficient data for correlation analysis\n');
+        warning('Insufficient data for correlation analysis');
         correlation.pearson = eye(size(returns, 2));
         correlation.spearman = eye(size(returns, 2));
         correlation.kendall = eye(size(returns, 2));
@@ -672,7 +671,7 @@ function profiles = optimizeRiskProfiles(expReturns, covMatrix, rfr, config)
                    profileName, weights(1)*100, weights(2)*100, weights(3)*100, sharpeRatio);
             
         catch ME
-            fprintf('Warning: Failed to optimize %s portfolio: %s\n', profileName, ME.message);
+            warning('Failed to optimize %s portfolio: %s', profileName, ME.message);
             
             % Simple fallback with forced Bitcoin allocation
             bitcoinWeight = forcedBitcoinAlloc(i);
@@ -717,8 +716,7 @@ function weights = optimizeWithFmincon(expReturns, covMatrix, avgRfr, lb, ub)
     
     try
         weights = fmincon(objFun, x0, [], [], Aeq, beq, lb, ub, [], options);
-    catch ME
-        fprintf('Warning: fmincon optimization failed: %s\n', ME.message);
+    catch
         % Final fallback: use bounds-constrained equal weights
         weights = (lb + ub) / 2;
         weights = weights / sum(weights);
@@ -815,7 +813,7 @@ function frontier = calculateEfficientFrontier(expReturns, covMatrix, rfr, confi
                                    'sharpe', sharpeRatios(maxSharpeIdx));
         
     catch ME
-        fprintf('Warning: Efficient frontier calculation failed: %s\n', ME.message);
+        warning('Efficient frontier calculation failed: %s', ME.message);
         % Create empty frontier
         frontier = struct();
         frontier.weights = [];
@@ -872,7 +870,7 @@ function mcResults = runMonteCarloSimulation(data, portfolioResults, config)
         validReturns = returns(all(~isnan(returns), 2), :);
         
         if size(validReturns, 1) < 12
-            fprintf('Warning: Insufficient data for Monte Carlo simulation\n');
+            warning('Insufficient data for Monte Carlo simulation');
             return;
         end
         
